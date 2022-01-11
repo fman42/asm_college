@@ -12,77 +12,35 @@ start:
     
     cmp ah, 4Dh
         je right
-        
-    cmp ah, 1Ch
-        je enter    
       
     left:
        
         SUB offsetFlag, 1
-        call clearWindow
-        jmp start
+        call renderStartWindowProcedure
         ret   
     
     right:
         ADD offsetFlag, 1
-        call clearWindow
-        jmp start
-        ret
-    
-    enter:
-        cmp offsetFlag, 0
-        JBE exit
-        JA restart
-        
-        exit:
-            int 20h
-            
-        restart:     
-            mov offsetFlag, 0
-            jmp start
-            
+        call renderStartWindowProcedure
         ret
 
-    renderStartWindowProcedure PROC            
+    renderStartWindowProcedure PROC    
         mov ah,09h
-        
         cmp offsetFlag, 0
-        JBE yes_ins
-        JA no_ins
+        JB call renderActiveYesButton
+       
+        ; JNB
+         
+        lea dx,whitespace
+        int 21h
         
-        yes_ins:
-           call renderActiveYesButton  
-        
-           lea dx,whitespace
-           int 21h
-            
-           lea dx,no 
-           int 21h
-           ret 
-        
-        no_ins:
-           lea dx,yes 
-           int 21h  
-                                  
-           lea dx,whitespace
-           int 21h
-            
-           call renderActiveNoButton    
-           ret
+        lea dx,no 
+        int 21h
                 
         ret
     renderStartWindowProcedure ENDP
     
     ; |||||||||||||||||||||||||| Primary procedures ||||||||||||||||||||||||||||||||||
-    
-    clearWindow PROC
-        mov ax, 0x0700
-        mov bh, 0x07   
-        mov cx, 0x0000 
-        mov dx, 0x184f 
-        int 10h
-        ret
-    clearWindow ENDP
        
     renderActiveYesButton PROC
         mov cx,3d
